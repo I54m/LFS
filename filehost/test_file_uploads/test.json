@@ -1,0 +1,19 @@
+{
+  "Version": "16.0.1",
+  "Name": "LFS.i54m.com",
+  "DestinationType": "ImageUploader, TextUploader, FileUploader",
+  "RequestMethod": "POST",
+  "RequestURL": "https://lfs.i54m.com/api-upload/",
+  "Headers": {
+    "app-id": "*REDACTED*",
+    "api-secret": "*REDACTED*"
+  },
+  "Body": "MultipartFormData",
+  "Arguments": {
+    "app_id": "*REDACTED*",
+    "api_secret": "*REDACTED*"
+  },
+  "FileFormName": "uploaded_file",
+  "URL": "{json:data.url}",
+  "ThumbnailURL": "{json:data.thumbnail_url}"
+}

@@ -1,0 +1,38 @@
+{% extends './formatted_view.html' %}
+
+{% block page_title %}
+    <h2 class="my-3">Download File: {{ uploaded_file.slug }}</h2>
+    <p id="download-text">File will be downloaded in <span id="counter">5</span>...</p>
+{% endblock page_title %}
+
+
+{% block manage %}
+    <div class="my-3 d-flex justify-content-center"> 
+      <a class="btn btn-outline-secondary mx-1" href="{% url 'filehost:fetch-file-download' uploaded_file.slug %}">Download File Again</a>
+    </div>
+{% endblock manage %}
+
+
+{% block redirect %}
+    <script>
+        setInterval(function() {
+            var div, count;
+            try {
+                div = document.querySelector("#counter");
+                count = div.textContent * 1;
+                if (count > 0 ) {
+                    count--;
+                }
+                div.textContent = count;
+            } catch {
+    
+            }
+            if (count <= 0) {
+                window.location.replace("https://lfs.i54m.com/{{ uploaded_file.slug }}/dl-raw/");
+                var p = document.querySelector("#download-text");
+                p.textContent = "Your file has now been downloaded!"
+            }
+        }, 1000);
+    </script>
+{% endblock redirect %}
+

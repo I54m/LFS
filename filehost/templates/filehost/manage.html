@@ -1,0 +1,14 @@
+{% extends './formatted_view.html' %}
+
+{% block page_title %}
+<h2 class="my-3">Manage File: {{ uploaded_file.slug }}</h2>
+{% endblock page_title %}
+
+{% block manage %}
+<div class="my-3 d-flex justify-content-center"> 
+    <a class="btn btn-outline-primary mx-1" href="{% url 'filehost:update-upload' uploaded_file.slug %}">Update</a>
+    {% if uploaded_file.persistent == False %}
+        <a class="btn btn-outline-danger mx-1" href="{% url 'filehost:delete-upload' uploaded_file.slug %}">Delete</a>
+    {% endif %}
+</div>
+{% endblock manage %}

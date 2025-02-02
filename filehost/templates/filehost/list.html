@@ -1,0 +1,38 @@
+{% extends './base.html' %}
+{% block content %}
+
+{% if recent_uploads.count != 0 %}
+    <hr class="mt-5">
+    <h1>Your Recent Uploads</h1>
+    <ul class="cards mb-3 justify-content-start">
+    {% for uploaded_file in recent_uploads %}
+        <a class="card-link" href="{% url 'filehost:manage-upload' uploaded_file.slug %}">
+        <li class="card bg-dark hover my-3 ">
+
+            {% if uploaded_file.thumbnail %}
+                <img class="card-img-top" src="{{ uploaded_file.thumbnail.url }}" alt="{{ uploaded_file.slug }} thumbnail image" />
+            {% else %}
+                <div class="card-img-top"> {{ uploaded_file.svg_preview | safe }} </div>
+            {% endif %}
+            
+            <div class="card-body">
+                <h3 class="card-title">{{ uploaded_file.slug }}</h3>
+                <div class="card-content"><p>Uploaded at: {{ uploaded_file.uploaded_at }}</p></div>
+                <div class="card-content"><p>Upload Type: {{ uploaded_file.upload_type }}</p></div>
+                <div class="card-content"><p>File Type: {{ uploaded_file.file_type }}</p></div>
+                <div class="card-content"><p>Mime Type: {{ uploaded_file.mime_type }}</p></div>
+                {% if uploaded_file.persistent %}
+                <div class="card-content"><p>File is Persistent</p></div>
+                {% else %}
+                <div class="card-content"><p>Expires: {{ uploaded_file.expiration_date }}</p></div>
+                {% endif %}
+            </div>
+
+        </li>
+        </a>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+
+{% endblock %}

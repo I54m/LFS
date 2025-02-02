@@ -1,0 +1,50 @@
+{% extends './base.html' %}
+{% block content %}
+{% if uploaded_file_slug %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        File uploaded successfully! View it at: <a href="{% url 'filehost:fetch-file' uploaded_file_slug %}" class="alert-link" style="font-weight: 700 !important; color: var(--bs-alert-link-color) !important;">{{ uploaded_file_slug }}</a>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+{% endif %}
+
+<h1 class="mt-5">Manual File Upload</h3>
+
+<hr style="border-color: #eeeeee !important;">
+
+<form class="my-3" action="{% url 'filehost:manual-upload' %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <p>{{ form.non_field_errors }}</p>
+    <p><h3 class="my-0">{{ form.file.label_tag }}</h3>
+    <small id="fileErrors" class="text-danger">
+        {{ form.file.errors }}
+    </small><br>
+        {{ form.file }}<br>
+        {{ form.file.help_text }}
+    </p>
+    <p>{{ form.expiration.label_tag }}<br>
+        {{ form.expiration.help_text }}
+        <small id="expirationErrors" class="text-danger">
+            {{ form.expiration.errors }}
+        </small><br>
+        {{ form.expiration }}
+    </p>
+    <p>{{ form.persistent.label_tag }}<br>
+        {{ form.persistent.help_text }}
+        <small id="persistentErrors" class="text-danger">
+            {{ form.persistent.errors }}
+        </small><br>
+        {{ form.persistent }}
+    </p>
+    <p>{{ form.featured.label_tag }}<br>
+        {{ form.featured.help_text }}
+        <small id="featuredErrors" class="text-danger">
+            {{ form.featured.errors }}
+        </small><br>
+        {{ form.featured }}
+    </p>
+    <p><input class="btn btn-outline-light" type="submit" value="Upload" /></p>
+</form>
+
+{% endblock %}

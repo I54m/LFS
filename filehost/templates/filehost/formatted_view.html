@@ -1,0 +1,86 @@
+{% extends './base.html' %}
+{% comment %} {% load uploaded_file_filters %} {% endcomment %}
+
+{% block oembedLinks %}
+<link rel="alternate" type="application/json+oembed"
+  href="https://lfs.i54m.com/oembed?url=https%3A%2F%2Flfs.i54m.com/{{ uploaded_file.slug }}&format=json"
+  title="{{ uploaded_file.slug }}" />
+<link rel="alternate" type="text/xml+oembed"
+  href="https://lfs.i54m.com/oembed?url=https%3A%2F%2Flfs.i54m.com/{{ uploaded_file.slug }}&format=xml"
+  title="{{ uploaded_file.slug }}" />
+{% endblock oembedLinks %}
+
+{% block content %}
+
+{% block page_title %}
+<h2 class="my-3">{{ uploaded_file.slug }}</h2>
+{% endblock page_title %}
+<div class="row my-5">
+  
+  <div class="col-md-9">
+    {% if uploaded_file.file_type == 'IMAGE' %}
+      <img class="img-fluid w-100" src="{{ uploaded_file.file_or_thumb.url }}" alt="{{ uploaded_file.slug }} image" >
+    {% elif uploaded_file.file_type == 'TEXT' %}
+      {% comment %} {{ text_file_contents | safe }}{% endcomment %}
+
+      {% for line in text_file_lines %}
+          {{ line }}</br>
+      {% endfor %}
+
+      {% comment %} <iframe class="w-100 h-100" src="{{ uploaded_file.file.url }}" alt="{{ uploaded_file.slug }} text file" ></iframe> {% endcomment %}
+    {% endif %}
+  </div>
+
+  <div class="col-md-3">
+    {% block manage %}
+    <div class="my-3 d-flex justify-content-center"> 
+      <a class="btn btn-outline-primary mx-1" href="{% url 'filehost:fetch-file-download' uploaded_file.slug %}">Download File</a>
+    </div>
+    {% endblock manage %}
+    {% if uploaded_file.has_thumbnail %}
+      <img id="thumbnail" class="img-fluid mb-3" src="{{ uploaded_file.thumbnail.url }}" alt="{{ uploaded_file.slug }} thumbnail image" />
+    {% else %}
+      <div id="thumbnail" class="img-fluid mb-3"> {{ uploaded_file.svg_preview | safe }} </div>
+    {% endif %}
+    <h5>Oembed Links:</h5>
+        <p><a class="hover" href="https://lfs.i54m.com/oembed?url=https%3A%2F%2Flfs.i54m.com/{{ uploaded_file.slug }}&format=json">Oembed - JSON</a></p>
+        <p><a class="hover" href="https://lfs.i54m.com/oembed?url=https%3A%2F%2Flfs.i54m.com/{{ uploaded_file.slug }}&format=xml">Oembed - XML</a></p>
+    
+    {% if uploaded_file.uploader %}
+    <h5>Uploaded by:</h5>
+    <p>{{ uploaded_file.uploader.username }}</p>
+    {% endif %}
+    <h5>Date Uploaded:</h5>
+    <p>{{ uploaded_file.uploaded_at }}</p>
+    <h5>Access Level:</h5>
+    <p>{{ uploaded_file.access }}</p>
+    {% if uploaded_file.persistent %}
+    <h5>File is Persistent</h5>
+    {% else %}
+    <h5>Expires:</h5>
+    <p>{{ uploaded_file.expiration_date }}</p>
+    {% endif %}
+    <h5>State:</h5>
+    <p>{{ uploaded_file.state }}</p>
+    <h5>Upload Type:</h5>
+    <p>{{ uploaded_file.upload_type }}</p>
+    <h5>File Type:</h5>
+    <p>{{ uploaded_file.file_type }}</p>
+    <h5>Mime Type:</h5>
+    <p>{{ uploaded_file.mime_type }}</p>
+    {% if uploaded_file.featured %}
+    <h5>File is Featured on Homepage</h5>
+    {% else %}
+    <h5>File is NOT Featured on Homepage</h5>
+    {% endif %}
+    
+  </div>
+  
+</div>
+
+
+
+
+
+
+{% endblock content %}
