@@ -9,10 +9,8 @@ urlpatterns = [
 
     ##### User Upload Management #####
     path("uploads/", views.list_uploads, name="list-uploads"),
-    path("uploads/<slug:slug>/", views.manage_upload, name="manage-upload"),
-    # path("uploads/<slug:slug>/delete/", views.delete_upload, name="delete-upload"),
     path("uploads/<slug:slug>/delete/", views.DeleteUploadClass.as_view(), name="delete-upload"),
-    path("uploads/<slug:slug>/update/", views.update_upload, name="update-upload"),
+    path("uploads/<slug:slug>/update/", views.UpdateUploadClass.as_view(), name="update-upload"),
     # TODO Archive/Localise upload view?
 
     

@@ -6,7 +6,7 @@
     <h1>Your Recent Uploads</h1>
     <ul class="cards mb-3 justify-content-start">
     {% for uploaded_file in recent_uploads %}
-        <a class="card-link" href="{% url 'filehost:manage-upload' uploaded_file.slug %}">
+        <a class="card-link" href="{% url 'filehost:fetch-file-formatted' uploaded_file.slug %}">
         <li class="card bg-dark hover my-3 ">
 
             {% if uploaded_file.thumbnail %}

@@ -34,7 +34,13 @@
   <div class="col-md-3">
     {% block manage %}
     <div class="my-3 d-flex justify-content-center"> 
-      <a class="btn btn-outline-primary mx-1" href="{% url 'filehost:fetch-file-download' uploaded_file.slug %}">Download File</a>
+      <a class="btn btn-outline-light mx-1" href="{% url 'filehost:fetch-file-download' uploaded_file.slug %}">Download File</a>
+      {% if authorized %}
+        <a class="btn btn-outline-primary mx-1" href="{% url 'filehost:update-upload' uploaded_file.slug %}">Update</a>
+        {% if uploaded_file.persistent == False %}
+          <a class="btn btn-outline-danger mx-1" href="{% url 'filehost:delete-upload' uploaded_file.slug %}">Delete</a>
+        {% endif %}
+      {% endif %}
     </div>
     {% endblock manage %}
     {% if uploaded_file.has_thumbnail %}

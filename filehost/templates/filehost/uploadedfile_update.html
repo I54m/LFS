@@ -1,0 +1,27 @@
+{% extends './base.html' %}
+{% block content %}
+{% block page_title %}
+<h2 class="my-3">{{ object.slug }}</h2>
+{% endblock page_title %}
+<p><b>File:</b>  <a class="hover" href="{{ object.raw_file_url }}">{{ object.file_path }}</a></p>
+<p><b>Slug:  </b>{{ object.slug }}</p>
+<p><b>Uploaded at:  </b>{{ object.uploaded_at }}</p>
+<p><b>State:  </b>{{ object.state }}</p>
+<p><b>Upload Type:  </b>{{ object.upload_type }}</p>
+<p><b>File Type:  </b>{{ object.file_type }}</p>
+<p><b>Mime Type:  </b>{{ object.mime_type }}</p>
+<p><b>Thumbnail: </b> <a class="hover" href="{{ object.thumbnail_url }}">{{ object.thumbnail_path }}</a></p>
+
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <br>
+    <input class="btn btn-outline-primary mx-1" type="submit" value="Update">
+    <a class="btn btn-outline-secondary mx-1" href="{% url 'filehost:fetch-file-formatted' object.slug %}">Cancel</a>
+
+</form>
+<br>
+{% if object.persistent == False %}
+        <a class="btn btn-outline-danger mx-1" href="{% url 'filehost:delete-upload' object.slug %}">Delete</a>
+{% endif %}
+
+{% endblock %}

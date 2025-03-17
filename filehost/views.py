@@ -90,22 +90,15 @@ def check_uploaded_file(slug: str, request: HttpRequest, localise=True, display_
 
     return HttpResponse(status=500, content="Somehow the uploaded file was found but we were not able to determine access rules, Was another access level added without being added to the pre fetching checks?"), None # 500 Internal Server Error
 
-    
+##################################################
+#                File Management                 #
+##################################################
 
 @login_required
 def list_uploads(request: HttpRequest):
     recent_uploads = UploadedFile.objects.filter(uploader=request.user.pk).order_by('-uploaded_at')[:10]
     all_uploads = UploadedFile.objects.filter(uploader=request.user.pk).order_by('-uploaded_at')
     return render(request=request, template_name="filehost/list.html", context={'recent_uploads': recent_uploads, 'all_uploads': all_uploads,}) # 200 OK
-
-@login_required
-def manage_upload(request: HttpRequest, slug):
-    status, uploaded_file = check_uploaded_file(slug, request, localise=False)
-    if status is not None:
-        return status
-    if not uploaded_file.can_be_managed_by(request.user):
-        return HttpResponseForbidden("You do not have permission to manage this uploaded file!") # 403 Forbidden
-    return render(request=request, template_name="filehost/manage.html", context={'uploaded_file': uploaded_file,}) # 200 OK
 
 class DeleteUploadClass(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = UploadedFile
@@ -116,8 +109,7 @@ class DeleteUploadClass(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return reverse('filehost:list-uploads')
     
     def test_func(self):
-        uf = UploadedFile.objects.get(slug=self.get_object().slug)
-        return uf.can_be_managed_by(self.request.user)
+        return self.get_object().can_be_managed_by(self.request.user)
     
     def dispatch(self, request, *args, **kwargs):
         user_test_result = self.get_test_func()()
@@ -125,15 +117,25 @@ class DeleteUploadClass(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return HttpResponseForbidden(self.get_permission_denied_message()) # 403 Forbidden
         return super().dispatch(request, *args, **kwargs)
 
-@login_required
-def update_upload(request: HttpRequest, slug):
-    status, uploaded_file = check_uploaded_file(slug, request, localise=False)
-    if status is not None:
-        return status
-    if not uploaded_file.can_be_managed_by(request.user):
-        return HttpResponseForbidden("You do not have permission to manage this uploaded file!") # 403 Forbidden
-    return render(request=request, template_name="filehost/update.html", context={'uploaded_file': uploaded_file,}) # 200 OK
+class UpdateUploadClass(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = UploadedFile
+    template_name_suffix = "_update"
+    permission_denied_message = "You do not have permission to manage or delete this uploaded file!"
+    fields = ["expiration_date", "persistent", "uploader", "access", "featured"]
+    # read only fields: ("file", "slug", "uploaded_at", "state", "upload_type", "file_type", "mime_type", "thumbnail")
 
+    def get_success_url(self):
+        messages.success(self.request, f"Successfully updated: {self.object.slug}")
+        return reverse('filehost:fetch-file-formatted', slug=self.get_object.slug)
+
+    def test_func(self):
+        return self.get_object().can_be_managed_by(self.request.user)
+    
+    def dispatch(self, request, *args, **kwargs):
+        user_test_result = self.get_test_func()()
+        if not user_test_result:
+            return HttpResponseForbidden(self.get_permission_denied_message()) # 403 Forbidden
+        return super().dispatch(request, *args, **kwargs)
 
 
 ##################################################
@@ -360,6 +362,10 @@ def fetch_file_formatted(request: HttpRequest, slug):
         if uploaded_file.file.size >= 512000:
             messages.warning(request, "This file is larger than 5MB. The preview has been limited.")
         context['text_file_lines'] = lines
+    if uploaded_file.can_be_managed_by(request.user):
+        context['authorized'] = True
+    else:
+        context['authorized'] = False
     return render(request=request, template_name="filehost/formatted_view.html", context=context) # 200 OK
 
 def fetch_file_email(request: HttpRequest, slug): # TODO Email View

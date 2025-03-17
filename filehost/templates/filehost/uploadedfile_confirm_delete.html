@@ -8,7 +8,7 @@
     <p>Are you sure you want to permanently delete "{{ object }}"?</p>
     {{ form }}
     <input class="btn btn-outline-danger mx-1" type="submit" value="Confirm Delete">
-    <a class="btn btn-outline-secondary mx-1" href="{% url 'filehost:manage-upload' object.slug %}">Cancel</a>
+    <a class="btn btn-outline-secondary mx-1" href="{% url 'filehost:fetch-file-formatted' object.slug %}">Cancel</a>
 </form>
 
 {% endblock content %}

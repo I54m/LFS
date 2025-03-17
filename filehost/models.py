@@ -4,6 +4,7 @@ from django.db import models
 from django.utils import timezone
 from django.conf import settings
 from django.contrib import admin
+from django.urls import reverse
 from mimetypes import guess_type
 from i54m_apiuser.models import ApiUser
 import os, string, random
@@ -128,6 +129,14 @@ class UploadedFile(models.Model):
     featured = models.BooleanField(default=True)
     access = models.CharField(max_length=16, choices=Access.CHOICES, default=Access.PUBLIC) 
 
+    @property
+    def raw_file_url(self):
+        return f"https://{settings.ALLOWED_HOSTS[0]}/{self.slug}/raw"
+    
+    @property
+    def thumbnail_url(self):
+        return f"https://{settings.ALLOWED_HOSTS[0]}/{self.slug}/thmb"
+    
     @property
     def file_or_thumb(self):
         '''
