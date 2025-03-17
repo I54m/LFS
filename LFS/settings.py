@@ -39,13 +39,14 @@ SESSION_COOKIE_SECURE = True
 #SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 #SECURE_HSTS_PRELOAD = True
 #SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 CSRF_TRUSTED_ORIGINS = ['https://i54m.com', 'https://*.i54m.com']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['lfs.i54m.com']
+ALLOWED_HOSTS = ['lfs.i54m.com', 'i.i54m.com', 'image.i54m.com', 'img.i54m.com', 'dl.i54m.com', 'download.i54m.com']
 
 
 # Application definition
