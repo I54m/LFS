@@ -10,7 +10,6 @@ from django.conf import settings
 from .models import UploadedFile
 from .forms import UploadedFileForm
 from filehost import tasks, oembed
-from device_detector import DeviceDetector
 from i54m_apiuser.models import ApiKey, ApiUser
 import os
 
