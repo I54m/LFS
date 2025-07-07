@@ -1,3 +1,4 @@
 /static
 /media
 */__pycache__
+filehost/__pycache__/*.pyc
