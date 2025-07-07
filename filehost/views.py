@@ -125,7 +125,7 @@ class UpdateUploadClass(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
     def get_success_url(self):
         messages.success(self.request, f"Successfully updated: {self.object.slug}")
-        return reverse('filehost:fetch-file-formatted', slug=self.get_object.slug)
+        return reverse('filehost:fetch-file-formatted', kwargs={'slug': self.object.slug})
 
     def test_func(self):
         return self.get_object().can_be_managed_by(self.request.user)
