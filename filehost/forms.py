@@ -1,4 +1,5 @@
 from django import forms
+from filehost.models import UploadedFile
 
 class UploadedFileForm(forms.Form):
     file = forms.FileField(
@@ -18,6 +19,14 @@ class UploadedFileForm(forms.Form):
     featured = forms.BooleanField(
         label='File can be featured?',
         help_text='(Featured files are displayed on homepage)',
-        required=False,
+        required=True,
         initial=True,
+    )
+    access = forms.ChoiceField(
+        label='Access Privacy (Required)',
+        help_text="Public=anyone can view; Members Only=only users with an acccount; Private=only you",
+        initial=UploadedFile.Access.PUBLIC,
+        choices=UploadedFile.Access.CHOICES,
+        required=True
+
     )

@@ -316,7 +316,8 @@ def handle_manual_upload(request: HttpRequest):
                 uploaded_file.featured=False
             else:
                 uploaded_file.featured=True
-        
+
+            uploaded_file.access = form.data.get("access")
             uploaded_file.save()
             
             # Reload the page with the success alert

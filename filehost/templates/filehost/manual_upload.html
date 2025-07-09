@@ -44,6 +44,13 @@
         </small><br>
         {{ form.featured }}
     </p>
+    <p>{{ form.access.label_tag }}<br>
+        {{ form.access.help_text }}
+        <small id="accessErrors" class="text-danger">
+            {{ form.access.errors }}
+        </small><br>
+        {{ form.access }}
+    </p>
     <p><input class="btn btn-outline-light" type="submit" value="Upload" /></p>
 </form>
 
