@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import environ
 import os
 import sys
 
@@ -19,13 +20,24 @@ TEST_ENV = len(sys.argv) > 1 and sys.argv[1] == 'test'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Initialize environment variables
+env = environ.Env(DEBUG=(bool, False))
+
+# Determine environment, default to local
+DJANGO_ENV = os.getenv('DJANGO_ENV', 'local')
+
+# Point to the correct .env file
+env_file = os.path.join(BASE_DIR, f'.env.{DJANGO_ENV}')
+
+# Load environment variables
+environ.Env.read_env(env_file)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-with open('/usr/share/django/config/LFS/secret_key.txt') as f:
-    SECRET_KEY = f.read().strip()
+SECRET_KEY = env('SECRET_KEY')
 
 AUTH_USER_MODEL = 'i54m_apiuser.ApiUser'
 
@@ -44,7 +56,7 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 CSRF_TRUSTED_ORIGINS = ['https://i54m.com', 'https://*.i54m.com']
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG', default=False)
 
 ALLOWED_HOSTS = ['lfs.i54m.com', 'i.i54m.com', 'image.i54m.com', 'img.i54m.com', 'dl.i54m.com', 'download.i54m.com']
 
@@ -99,10 +111,12 @@ WSGI_APPLICATION = 'LFS.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': '/usr/share/django/config/LFS/my.cnf',
-        },
+        'ENGINE': env('DB_ENGINE'),
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': env('DB_HOST'),
+        'PORT': env('DB_PORT'),
         'TEST': {
             'NAME': 'test_django'
         }
@@ -147,10 +161,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_ROOT = os.path.join(BASE_DIR, "../static/")
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_ROOT = os.path.join(BASE_DIR, '../media/')
 
 FILE_UPLOAD_PERMISSIONS = 0o777
 
@@ -167,8 +181,8 @@ LOGOUT_REDIRECT_URL = "/"
 # Celery Settings
 #https://docs.celeryq.dev/en/main/getting-started/first-steps-with-celery.htm
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

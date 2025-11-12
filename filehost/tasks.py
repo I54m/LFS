@@ -9,19 +9,24 @@ from stat import S_ISREG
 import configparser, shutil
 from PIL import Image
 import ffmpeg
+import environ
 
 from preview_generator.manager import PreviewManager
 
+
+
+# Load environment variables
+environ.Env.read_env(settings.env_file)
 
 # NAS connection details 
 config = configparser.ConfigParser()
 config.read_file(open(r'/usr/share/django/config/LFS/nas.cnf'))
 
-NAS_HOST = config.get('nas connection', 'nas_host').rstrip()
-NAS_SFTP_PORT = config.getint('nas connection', 'nas_sftp_port')
-NAS_USERNAME = config.get('nas connection', 'nas_username').rstrip()
-NAS_PATH = config.get('nas connection', 'nas_path').rstrip()
-PRIVATE_KEY_PATH = config.get('nas connection', 'private_key_path').rstrip()
+NAS_HOST = env('NAS_HOST')
+NAS_SFTP_PORT = env('NAS_PORT')
+NAS_USERNAME = env('NAS_USERNAME')
+NAS_PATH = env('NAS_PATH')
+PRIVATE_KEY_PATH = env(NAS_PRIVATE_KEY_PATH)
 
 
 def print_error_info(e: Exception, transport: paramiko.Transport):
