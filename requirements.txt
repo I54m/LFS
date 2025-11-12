@@ -1,0 +1,20 @@
+CairoSVG==2.7.1
+celery==5.4.0
+defusedxml==0.7.1
+dicttoxml==1.7.16
+Django==4.2.13
+django_resized==1.0.2
+django-celery-beat==2.6.0
+django-i54m-apiuser @ file:///usr/share/django/django-i54m-apiuser/dist/django-i54m-apiuser-0.2.2.tar.gz#sha256=c78536264d39218aa389575fd637981bedda6064f3eec0b2cb49237a281ac219
+django-ipware==7.0.1
+django-js-asset==2.2.0
+django-timezone-field==6.1.0
+ffmpeg_python==0.2.0
+future==1.0.0
+gunicorn==23.0.0
+mysqlclient==2.2.4
+paramiko==3.4.0
+Pillow==12.0.0
+preview_generator==0.29
+redis==5.0.4
+regex==2024.5.15
