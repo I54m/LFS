@@ -14,14 +14,15 @@ import environ
 
 from preview_generator.manager import PreviewManager
 
-
+# Initialize environment variables
+env = environ.Env(DEBUG=(bool, False))
 
 # Load environment variables
-env = environ.Env.read_env(ENV_FILE)
+environ.Env.read_env(ENV_FILE)
 
-# NAS connection details 
-config = configparser.ConfigParser()
-config.read_file(open(r'/usr/share/django/config/LFS/nas.cnf'))
+# # NAS connection details 
+# config = configparser.ConfigParser()
+# config.read_file(open(r'/usr/share/django/config/LFS/nas.cnf'))
 
 NAS_HOST = env('NAS_HOST')
 NAS_SFTP_PORT = env('NAS_PORT')
