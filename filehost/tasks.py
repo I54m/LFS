@@ -17,7 +17,7 @@ from preview_generator.manager import PreviewManager
 
 
 # Load environment variables
-environ.Env.read_env(ENV_FILE)
+env = environ.Env.read_env(ENV_FILE)
 
 # NAS connection details 
 config = configparser.ConfigParser()
