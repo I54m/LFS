@@ -25,7 +25,7 @@ environ.Env.read_env(ENV_FILE)
 # config.read_file(open(r'/usr/share/django/config/LFS/nas.cnf'))
 
 NAS_HOST = env('NAS_HOST')
-NAS_SFTP_PORT = env('NAS_PORT')
+NAS_SFTP_PORT = env('NAS_SFTP_PORT')
 NAS_USERNAME = env('NAS_USERNAME')
 NAS_PATH = env('NAS_PATH')
 PRIVATE_KEY_PATH = env('NAS_PRIVATE_KEY_PATH')
