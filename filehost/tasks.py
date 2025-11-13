@@ -6,6 +6,7 @@ from filehost.oembed import CACHE_AGE
 from django.utils import timezone
 from django.conf import settings
 from stat import S_ISREG
+from LFS.settings import env_file as ENV_FILE
 import configparser, shutil
 from PIL import Image
 import ffmpeg
@@ -16,7 +17,7 @@ from preview_generator.manager import PreviewManager
 
 
 # Load environment variables
-environ.Env.read_env(settings.env_file)
+environ.Env.read_env(ENV_FILE)
 
 # NAS connection details 
 config = configparser.ConfigParser()
@@ -26,7 +27,7 @@ NAS_HOST = env('NAS_HOST')
 NAS_SFTP_PORT = env('NAS_PORT')
 NAS_USERNAME = env('NAS_USERNAME')
 NAS_PATH = env('NAS_PATH')
-PRIVATE_KEY_PATH = env(NAS_PRIVATE_KEY_PATH)
+PRIVATE_KEY_PATH = env('NAS_PRIVATE_KEY_PATH')
 
 
 def print_error_info(e: Exception, transport: paramiko.Transport):
