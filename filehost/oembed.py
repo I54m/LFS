@@ -1,16 +1,17 @@
 from django.http import HttpRequest
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils import timezone
+from django.urls import reverse
 from .models import UploadedFile
 from PIL import Image
 from dicttoxml import dicttoxml
 import json 
 
-PROVIDER_NAME = "i54m"
-PROVIDER_URL = "https://i54m.com"
+PROVIDER_NAME = "lfs.i54m.com"
+PROVIDER_URL = "https://lfs.i54m.com"
 
-AUTHOR_NAME = "lfs.i54m.com"
-AUTHOR_URL = "https://lfs.i54m.com"
+AUTHOR_NAME = "I54m"
+AUTHOR_URL = "https://i54m.com"
 
 CACHE_AGE = 3600
 
