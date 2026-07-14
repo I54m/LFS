@@ -89,7 +89,7 @@ def build_oembed_dict(request: HttpRequest, uploaded_file: UploadedFile, max_wid
         "author_url": f"{AUTHOR_URL}",
         "referrer": f"{referrer}",
         "title": f"{uploaded_file.slug}",
-        "cache_age": f"{CACHE_AGE}",
+        "cache_age": CACHE_AGE,
     }
     
     match uploaded_file.file_type:
