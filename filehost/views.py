@@ -238,9 +238,6 @@ def handle_api_upload(request: HttpRequest):
             uploaded_file = UploadedFile(file=file, upload_type=UploadedFile.UploadType.API, uploader=user, persistent=persistent, featured=featured, access=access)
             uploaded_file.set_expiration(months=3)
             uploaded_file.save()
-            url = request.build_absolute_uri(
-                reverse("filehost:fetch-file", args=[uploaded_file.slug])
-            )
         except Exception as e:
             return JsonResponse({
                 "status": 500,
@@ -252,7 +249,12 @@ def handle_api_upload(request: HttpRequest):
         return JsonResponse({
                 "status": 200,
                 "data": {
-                    "url": url,
+                    "url": request.build_absolute_uri(
+                        reverse("filehost:fetch-file", args=[uploaded_file.slug])
+                    ),
+                    "raw_url": request.build_absolute_uri(
+                        reverse("filehost:fetch-file-raw", args=[uploaded_file.slug])
+                    ),
                     "thumbnail_url": request.build_absolute_uri(
                         reverse("filehost:fetch-file-thumbnail", args=[uploaded_file.slug])
                     ),
