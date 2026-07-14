@@ -10,6 +10,14 @@
       title="{{ uploaded_file.slug }}" />
 {% endblock oembedLinks %}
 
+{% block ogImageLinks %}
+    <meta property="og:title" content="{{ uploaded_file.slug }}">
+    <meta property="og:description" content="An uploaded file on lfs.i54m.com.">
+    <meta property="og:image" content="{{ raw_url }}">
+    <meta property="og:url" content="{{ formatted_url }}">
+    <meta property="og:type" content="website">
+{% endblock ogImageLinks %}
+
 {% block content %}
 
 {% block page_title %}
