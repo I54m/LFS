@@ -1,16 +1,17 @@
 from django.http import HttpRequest
 from django.core.serializers.json import DjangoJSONEncoder
 from django.utils import timezone
+from django.urls import reverse
 from .models import UploadedFile
 from PIL import Image
 from dicttoxml import dicttoxml
 import json 
 
-PROVIDER_NAME = "i54m"
-PROVIDER_URL = "https://i54m.com"
+PROVIDER_NAME = "lfs.i54m.com"
+PROVIDER_URL = "https://lfs.i54m.com"
 
-AUTHOR_NAME = "lfs.i54m.com"
-AUTHOR_URL = "https://lfs.i54m.com"
+AUTHOR_NAME = "I54m"
+AUTHOR_URL = "https://i54m.com"
 
 CACHE_AGE = 3600
 
@@ -89,7 +90,7 @@ def build_oembed_dict(request: HttpRequest, uploaded_file: UploadedFile, max_wid
         "author_url": f"{AUTHOR_URL}",
         "referrer": f"{referrer}",
         "title": f"{uploaded_file.slug}",
-        "cache_age": f"{CACHE_AGE}",
+        "cache_age": CACHE_AGE,
     }
     
     match uploaded_file.file_type:
@@ -111,16 +112,16 @@ def build_oembed_dict(request: HttpRequest, uploaded_file: UploadedFile, max_wid
 
             # absolute_url = request.build_absolute_uri(uploaded_file.file.url)
 
-            oembed_response["url"] = f"{request.build_absolute_uri(uploaded_file.file.url)}"
+            oembed_response["url"] = f"{request.build_absolute_uri(reverse("filehost:fetch-file-raw", args=[uploaded_file.slug]))}"
             # oembed_response["html"] = f'<img src="{absolute_url}" alt="{uploaded_file.slug}" width="{width}" height="{height}">'
             oembed_response["width"] = f"{width}"
             oembed_response["height"] = f"{height}"
 
             # thumb_width, thumb_height = uploaded_file.thumbnail.size
-
-            oembed_response["thumbnail_url"] = f"https://{request.get_host()}/{uploaded_file.slug}/thmb/"
-            oembed_response["thumbnail_width"] = f"{uploaded_file.thumbnail.width}"
-            oembed_response["thumbnail_height"] = f"{uploaded_file.thumbnail.height}"
+            if (uploaded_file.has_thumbnail):
+                oembed_response["thumbnail_url"] = f"{request.build_absolute_uri(reverse("filehost:fetch-file-thumbnail", args=[uploaded_file.slug]))}"
+                oembed_response["thumbnail_width"] = f"{uploaded_file.thumbnail.width}"
+                oembed_response["thumbnail_height"] = f"{uploaded_file.thumbnail.height}"
 
             img.close()
 

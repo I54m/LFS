@@ -238,7 +238,6 @@ def handle_api_upload(request: HttpRequest):
             uploaded_file = UploadedFile(file=file, upload_type=UploadedFile.UploadType.API, uploader=user, persistent=persistent, featured=featured, access=access)
             uploaded_file.set_expiration(months=3)
             uploaded_file.save()
-            url = f"https://{request.get_host()}/{uploaded_file.slug}"
         except Exception as e:
             return JsonResponse({
                 "status": 500,
@@ -250,9 +249,18 @@ def handle_api_upload(request: HttpRequest):
         return JsonResponse({
                 "status": 200,
                 "data": {
-                    "url": url,
-                    "thumbnail_url": f"{url}/thmb/",
-                    "deletion_url": f"https://{request.get_host()}/uploads/{uploaded_file.slug}/delete/"
+                    "url": request.build_absolute_uri(
+                        reverse("filehost:fetch-file", args=[uploaded_file.slug])
+                    ),
+                    "raw_url": request.build_absolute_uri(
+                        reverse("filehost:fetch-file-raw", args=[uploaded_file.slug])
+                    ),
+                    "thumbnail_url": request.build_absolute_uri(
+                        reverse("filehost:fetch-file-thumbnail", args=[uploaded_file.slug])
+                    ),
+                    "deletion_url": request.build_absolute_uri(
+                        reverse("filehost:delete-upload", args=[uploaded_file.slug])
+                    )
                 }
             }, status=200) # 200 OK
     else:
@@ -366,6 +374,14 @@ def fetch_file_formatted(request: HttpRequest, slug):
         context['authorized'] = True
     else:
         context['authorized'] = False
+
+    context['raw_url'] = request.build_absolute_uri(
+        reverse("filehost:fetch-file-raw", args=[uploaded_file.slug])
+    )
+
+    context['formatted_url'] = request.build_absolute_uri(
+        reverse("filehost:fetch-file-formatted", args=[uploaded_file.slug])
+    )
     return render(request=request, template_name="filehost/formatted_view.html", context=context) # 200 OK
 
 def fetch_file_email(request: HttpRequest, slug): # TODO Email View

@@ -7,12 +7,17 @@ from django.utils import timezone
 from django.conf import settings
 from stat import S_ISREG
 from LFS.settings import env_file as ENV_FILE
+from LFS.settings import DJANGO_ENV
 import configparser, shutil
 from PIL import Image
 import ffmpeg
 import environ
+from pathlib import Path
 
-from preview_generator.manager import PreviewManager
+cache_dir = Path(settings.BASE_DIR) / "cache" / "preview"
+
+# Global Preview Manager Variable
+manager = None
 
 # Initialize environment variables
 env = environ.Env(DEBUG=(bool, False))
@@ -51,6 +56,11 @@ def expire_files():
     Task to periodically expire files and move them to the NAS archive if they have reached their expiration_date
     """
     transport = None
+    
+    if (DJANGO_ENV == "local"):
+        print(f"Skipping Expiring files in dev environment!")
+        return True
+
     try:
         # exception counter for for loop so that an exception does not stop all files from being processed, but only stops that current file
         exception_counter = 0
@@ -429,7 +439,14 @@ def maintain_oembed_cache():
 
 
 @shared_task
-def create_thumbnail(slug: str, manager: PreviewManager = PreviewManager('/tmp/cache/', create_folder=True)):
+def create_thumbnail(slug: str):
+
+    global manager
+
+    if manager is None:
+        from preview_generator.manager import PreviewManager
+        manager = PreviewManager(str(cache_dir), create_folder=True)
+
     try:
         uploaded_file = UploadedFile.objects.get(slug=slug)
         # Setup Thumbnail paths and get filename
