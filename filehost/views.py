@@ -372,6 +372,14 @@ def fetch_file_formatted(request: HttpRequest, slug):
         context['authorized'] = True
     else:
         context['authorized'] = False
+
+    context['raw_url'] = request.build_absolute_uri(
+        reverse("filehost:fetch-file-raw", args=[uploaded_file.slug])
+    )
+
+    context['formatted_url'] = request.build_absolute_uri(
+        reverse("filehost:fetch-file-formatted", args=[uploaded_file.slug])
+    )
     return render(request=request, template_name="filehost/formatted_view.html", context=context) # 200 OK
 
 def fetch_file_email(request: HttpRequest, slug): # TODO Email View
