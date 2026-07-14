@@ -111,16 +111,16 @@ def build_oembed_dict(request: HttpRequest, uploaded_file: UploadedFile, max_wid
 
             # absolute_url = request.build_absolute_uri(uploaded_file.file.url)
 
-            oembed_response["url"] = f"{request.build_absolute_uri(uploaded_file.file.url)}"
+            oembed_response["url"] = f"{request.build_absolute_uri(reverse("filehost:fetch-file-raw", args=[uploaded_file.slug]))}"
             # oembed_response["html"] = f'<img src="{absolute_url}" alt="{uploaded_file.slug}" width="{width}" height="{height}">'
             oembed_response["width"] = f"{width}"
             oembed_response["height"] = f"{height}"
 
             # thumb_width, thumb_height = uploaded_file.thumbnail.size
-
-            oembed_response["thumbnail_url"] = f"https://{request.get_host()}/{uploaded_file.slug}/thmb/"
-            oembed_response["thumbnail_width"] = f"{uploaded_file.thumbnail.width}"
-            oembed_response["thumbnail_height"] = f"{uploaded_file.thumbnail.height}"
+            if (uploaded_file.has_thumbnail):
+                oembed_response["thumbnail_url"] = f"{request.build_absolute_uri(reverse("filehost:fetch-file-thumbnail", args=[uploaded_file.slug]))}"
+                oembed_response["thumbnail_width"] = f"{uploaded_file.thumbnail.width}"
+                oembed_response["thumbnail_height"] = f"{uploaded_file.thumbnail.height}"
 
             img.close()
 
