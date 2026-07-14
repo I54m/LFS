@@ -11,8 +11,12 @@ import configparser, shutil
 from PIL import Image
 import ffmpeg
 import environ
+from pathlib import Path
 
-from preview_generator.manager import PreviewManager
+cache_dir = Path(settings.BASE_DIR) / "cache" / "preview"
+
+# Global Preview Manager Variable
+manager = None
 
 # Initialize environment variables
 env = environ.Env(DEBUG=(bool, False))
@@ -429,7 +433,14 @@ def maintain_oembed_cache():
 
 
 @shared_task
-def create_thumbnail(slug: str, manager: PreviewManager = PreviewManager('/tmp/cache/', create_folder=True)):
+def create_thumbnail(slug: str):
+
+    global manager
+
+    if manager is None:
+        from preview_generator.manager import PreviewManager
+        manager = PreviewManager(str(cache_dir), create_folder=True)
+
     try:
         uploaded_file = UploadedFile.objects.get(slug=slug)
         # Setup Thumbnail paths and get filename
