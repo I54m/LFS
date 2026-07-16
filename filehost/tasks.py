@@ -110,7 +110,7 @@ def expire_files():
                         except FileNotFoundError:
                             print(f"NAS file missing for {uploaded_file}. Removing database record anyway.")
 
-                        if uploaded_file.thumbnail and os.path.isfile(uploaded_file.thumbnail):
+                        if uploaded_file.thumbnail and os.path.isfile(uploaded_file.thumbnail.path):
                             uploaded_file.thumbnail.delete()
                         uploaded_file.delete()
                     except Exception as archived_e:
