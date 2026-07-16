@@ -103,7 +103,13 @@ def expire_files():
                     try:
                         # Get the file on the nas archive and delete both the file and the model
                         nas_file_path = os.path.join(NAS_PATH, uploaded_file.file_path)
-                        sftp.remove(nas_file_path)
+
+                        try:
+                            sftp.stat(nas_file_path)
+                            sftp.remove(nas_file_path)
+                        except FileNotFoundError:
+                            print(f"NAS file missing for {uploaded_file}. Removing database record anyway.")
+
                         if uploaded_file.thumbnail and os.path.isfile(uploaded_file.thumbnail):
                             uploaded_file.thumbnail.delete()
                         uploaded_file.delete()
