@@ -88,7 +88,7 @@ def expire_files():
                         if os.path.isfile(uploaded_file.file.path):
                             # Move the file to the nas and mark as acrhived
                             sftp.put(uploaded_file.file.path, nas_file_path)
-                            uploaded_file.set_archived(years=1)
+                            uploaded_file.set_archived(years=2)
                             uploaded_file.file.delete()
                         else:
                             raise FileNotFoundError(f"Could not verify the file with path: {uploaded_file.file.path} exists or is a file!")
@@ -103,7 +103,13 @@ def expire_files():
                     try:
                         # Get the file on the nas archive and delete both the file and the model
                         nas_file_path = os.path.join(NAS_PATH, uploaded_file.file_path)
-                        sftp.remove(nas_file_path)
+
+                        try:
+                            sftp.stat(nas_file_path)
+                            sftp.remove(nas_file_path)
+                        except FileNotFoundError:
+                            print(f"NAS file missing for {uploaded_file}. Removing database record anyway.")
+
                         if uploaded_file.thumbnail and os.path.isfile(uploaded_file.thumbnail):
                             uploaded_file.thumbnail.delete()
                         uploaded_file.delete()
