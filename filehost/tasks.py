@@ -501,9 +501,9 @@ def create_thumbnail(slug: str):
                     f.close()
                 absolute_thumb_path = f"{absolute_thumb_path}.svg"
 
+        # Mimetype is not supported by preview generator so we make a basic svg of the slug and mimetype
         else:
             print("mimetype is not supported by preview generator, creating basic svg...")
-            # Mimetype is not supported by preview generator so we make a basic svg of the slug and mimetype
             svg = uploaded_file.generate_basic_svg_preview(filename)
             # Write to an svg thumbnail file
             thumbnail_ext = "svg"
@@ -520,10 +520,23 @@ def create_thumbnail(slug: str):
                 img.thumbnail((512, 512))
             # Save and close the thumbnail image regardless of whether we resized it or not as we still opened the image file
             img.save(absolute_thumb_path)
+            # Capture thumbnail width and height while open
+            uploaded_file.thumbnail_width = img.width
+            uploaded_file.thumbnail_height = img.height
+
             img.close()
+
             print("thumbnail resized!")
 
-        print("Adjusting uploaded file properties...")
+        if (uploaded_file.file_type == UploadedFile.FileType.IMAGE):
+            print("Uploaded file is an image, capturing width and height properties...")
+            img = Image.open(absolute_file_path)
+            uploaded_file.image_width = img.width
+            uploaded_file.image_height = img.height
+            img.close()
+            print("Captured width and height properties!")
+
+        print("Adjusting uploaded file thumbnail properties...")
         # Force point the thumbnail property to the new file and save
         uploaded_file.thumbnail_path = f"{uploaded_file.thumbnail_path}.{thumbnail_ext}"
         uploaded_file.thumbnail.name = uploaded_file.thumbnail_path
