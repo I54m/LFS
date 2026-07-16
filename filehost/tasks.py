@@ -1,5 +1,5 @@
 from celery import shared_task
-import paramiko, os, traceback
+import paramiko, os, traceback, shutil
 from filehost.models import UploadedFile
 from filehost.oembed import CACHED_OEMBED_DICT as OEMBED_CACHE
 from filehost.oembed import CACHE_AGE
@@ -8,9 +8,7 @@ from django.conf import settings
 from stat import S_ISREG
 from LFS.settings import env_file as ENV_FILE
 from LFS.settings import DJANGO_ENV
-import configparser, shutil
 from PIL import Image
-import ffmpeg
 import environ
 from pathlib import Path
 
@@ -30,7 +28,7 @@ environ.Env.read_env(ENV_FILE)
 # config.read_file(open(r'/usr/share/django/config/LFS/nas.cnf'))
 
 NAS_HOST = env('NAS_HOST')
-NAS_SFTP_PORT = env('NAS_SFTP_PORT')
+NAS_SFTP_PORT = env.int('NAS_SFTP_PORT')
 NAS_USERNAME = env('NAS_USERNAME')
 NAS_PATH = env('NAS_PATH')
 PRIVATE_KEY_PATH = env('NAS_PRIVATE_KEY_PATH')
@@ -43,10 +41,13 @@ def print_error_info(e: Exception, transport: paramiko.Transport):
     print(f"NAS_USERNAME: {NAS_USERNAME}")
     print(f"NAS_PATH: {NAS_PATH}")
     print(f"PRIVATE_KEY_PATH: {PRIVATE_KEY_PATH}")
-    print(f"transport connection info:")
-    print(f"transport.is_alive: {transport.is_alive()}")
-    print(f"transport.is_active: {transport.is_active()}")
-    print(f"transport.is_authenticated: {transport.is_authenticated()}")
+    if (transport is not None):
+        print(f"transport connection info:")
+        print(f"transport.is_alive: {transport.is_alive()}")
+        print(f"transport.is_active: {transport.is_active()}")
+        print(f"transport.is_authenticated: {transport.is_authenticated()}")
+    else:
+        print("transport: None")
     traceback.print_exception(e, limit=5)
 
 
@@ -500,9 +501,9 @@ def create_thumbnail(slug: str):
                     f.close()
                 absolute_thumb_path = f"{absolute_thumb_path}.svg"
 
+        # Mimetype is not supported by preview generator so we make a basic svg of the slug and mimetype
         else:
             print("mimetype is not supported by preview generator, creating basic svg...")
-            # Mimetype is not supported by preview generator so we make a basic svg of the slug and mimetype
             svg = uploaded_file.generate_basic_svg_preview(filename)
             # Write to an svg thumbnail file
             thumbnail_ext = "svg"
@@ -519,10 +520,23 @@ def create_thumbnail(slug: str):
                 img.thumbnail((512, 512))
             # Save and close the thumbnail image regardless of whether we resized it or not as we still opened the image file
             img.save(absolute_thumb_path)
+            # Capture thumbnail width and height while open
+            uploaded_file.thumbnail_width = img.width
+            uploaded_file.thumbnail_height = img.height
+
             img.close()
+
             print("thumbnail resized!")
 
-        print("Adjusting uploaded file properties...")
+        if (uploaded_file.file_type == UploadedFile.FileType.IMAGE):
+            print("Uploaded file is an image, capturing width and height properties...")
+            img = Image.open(absolute_file_path)
+            uploaded_file.image_width = img.width
+            uploaded_file.image_height = img.height
+            img.close()
+            print("Captured width and height properties!")
+
+        print("Adjusting uploaded file thumbnail properties...")
         # Force point the thumbnail property to the new file and save
         uploaded_file.thumbnail_path = f"{uploaded_file.thumbnail_path}.{thumbnail_ext}"
         uploaded_file.thumbnail.name = uploaded_file.thumbnail_path

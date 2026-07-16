@@ -1,5 +1,7 @@
 static/
 media/
+cache/
+test_media/
 # Byte-compiled / optimized / DLL files
 */__pycache__
 __pycache__/

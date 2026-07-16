@@ -114,6 +114,8 @@ class UploadedFile(models.Model):
     slug = models.SlugField(primary_key=True, unique=True, null=False, max_length=8, default=random_slug)
     file = models.FileField(null=True, upload_to=file_path)
     file_path = models.CharField(null=False, editable=False, max_length=64, default="/MANUAL/FILE/UNKNOWN.TXT")
+    image_width = models.PositiveIntegerField(null=True, editable=False)
+    image_height = models.PositiveIntegerField(null=True, editable=False)
     uploaded_at = models.DateTimeField(null=True)
     expiration_date = models.DateField()
     state = models.CharField(max_length=16, choices=State.CHOICES, default=State.LOCAL)
@@ -123,7 +125,9 @@ class UploadedFile(models.Model):
     mime_type = models.CharField(max_length=128, default="UNKNOWN")
     # Resized image thumbnail for images. This does not get archived and is presented while de-archiving file. This is also used in the oembed integration
     thumbnail = models.ImageField(null=True)
-    thumbnail_path = models.CharField(null=True, editable=False, max_length=64)
+    thumbnail_path = models.CharField(null=True, editable=False, max_length=64)    
+    thumbnail_width = models.PositiveIntegerField(null=True, editable=False)
+    thumbnail_height = models.PositiveIntegerField(null=True, editable=False)
     uploader = models.ForeignKey(ApiUser, null=True, on_delete=models.SET_NULL)
     # Whether to feature this file on the filehost homepage
     featured = models.BooleanField(default=True)
