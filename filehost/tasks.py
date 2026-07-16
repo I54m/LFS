@@ -30,7 +30,7 @@ environ.Env.read_env(ENV_FILE)
 # config.read_file(open(r'/usr/share/django/config/LFS/nas.cnf'))
 
 NAS_HOST = env('NAS_HOST')
-NAS_SFTP_PORT = env('NAS_SFTP_PORT')
+NAS_SFTP_PORT = env.int('NAS_SFTP_PORT')
 NAS_USERNAME = env('NAS_USERNAME')
 NAS_PATH = env('NAS_PATH')
 PRIVATE_KEY_PATH = env('NAS_PRIVATE_KEY_PATH')
@@ -43,10 +43,13 @@ def print_error_info(e: Exception, transport: paramiko.Transport):
     print(f"NAS_USERNAME: {NAS_USERNAME}")
     print(f"NAS_PATH: {NAS_PATH}")
     print(f"PRIVATE_KEY_PATH: {PRIVATE_KEY_PATH}")
-    print(f"transport connection info:")
-    print(f"transport.is_alive: {transport.is_alive()}")
-    print(f"transport.is_active: {transport.is_active()}")
-    print(f"transport.is_authenticated: {transport.is_authenticated()}")
+    if (transport is not None):
+        print(f"transport connection info:")
+        print(f"transport.is_alive: {transport.is_alive()}")
+        print(f"transport.is_active: {transport.is_active()}")
+        print(f"transport.is_authenticated: {transport.is_authenticated()}")
+    else:
+        print("transport: None")
     traceback.print_exception(e, limit=5)
 
 
