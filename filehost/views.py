@@ -236,7 +236,7 @@ def handle_api_upload(request: HttpRequest):
                     access = UploadedFile.Access.PUBLIC
 
             uploaded_file = UploadedFile(file=file, upload_type=UploadedFile.UploadType.API, uploader=user, persistent=persistent, featured=featured, access=access)
-            uploaded_file.set_expiration(months=3)
+            uploaded_file.set_expiration(months=6)
             uploaded_file.save()
         except Exception as e:
             return JsonResponse({
