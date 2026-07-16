@@ -88,7 +88,7 @@ def expire_files():
                         if os.path.isfile(uploaded_file.file.path):
                             # Move the file to the nas and mark as acrhived
                             sftp.put(uploaded_file.file.path, nas_file_path)
-                            uploaded_file.set_archived(years=1)
+                            uploaded_file.set_archived(years=2)
                             uploaded_file.file.delete()
                         else:
                             raise FileNotFoundError(f"Could not verify the file with path: {uploaded_file.file.path} exists or is a file!")
