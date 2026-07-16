@@ -1,5 +1,5 @@
 from celery import shared_task
-import paramiko, os, traceback
+import paramiko, os, traceback, shutil
 from filehost.models import UploadedFile
 from filehost.oembed import CACHED_OEMBED_DICT as OEMBED_CACHE
 from filehost.oembed import CACHE_AGE
@@ -8,9 +8,7 @@ from django.conf import settings
 from stat import S_ISREG
 from LFS.settings import env_file as ENV_FILE
 from LFS.settings import DJANGO_ENV
-import configparser, shutil
 from PIL import Image
-import ffmpeg
 import environ
 from pathlib import Path
 
